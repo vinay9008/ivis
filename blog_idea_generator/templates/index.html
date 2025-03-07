@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainable Blog Idea Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            /* display: flex; */
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            width: 80%;
+            max-width: 1200px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin-top: 70px;
+        }
+
+
+
+        .form-container {
+            width: 50%;
+            padding: 20px;
+            background: #e0f2e9;
+        }
+
+        .results-container {
+            width: 50%;
+            padding: 20px;
+            display: none;
+            background: #ffffff;
+            flex: 1;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        h1 {
+            color: #2c6e49;
+        }
+
+
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #2c6e49;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1e4d33;
+        }
+
+        .list-item {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background: #e0f2e9;
+        }
+
+        img {
+            /* border-radius: 50%; */
+            display: flex;
+            width: 70px;
+            height: 70px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <header style="display: flex;text-align: center; justify-content: center;"">
+        <img src=" static/NIE_University.png" style="margin-right: 50px;">
+        <h1 style="color: #fff;">NIE University & IVIS LABS</h1>
+        <img src="static/IVIS_logo.png" style="margin-left: 50px;">
+    </header>
+
+    <div class="">
+
+        <div style="text-align: center; justify-content: center;display: flex;">
+            <img src="static/PULSE LOGO.png" style="border-radius: 50%;margin-top: 10px;">
+            <h1 style="margin-top: 22px;">Sustainable Blog Idea Generator</h1>
+        </div>
+
+        <div class="container">
+
+            <div class="form-container">
+                <form id="ideaForm">
+                    <div class="form-group">
+                        <label for="niche">Sustainability Focus:</label>
+                        <input type="text" id="niche" name="niche" required
+                            placeholder="e.g., renewable energy, zero waste">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="num_ideas">Number of Ideas:</label>
+                        <select id="num_ideas" name="num_ideas">
+                            <option value="1">1</option>
+                            <option value="3" selected>3</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tone">Content Tone:</label>
+                        <select id="tone" name="tone">
+                            <option value="professional" selected>Professional</option>
+                            <option value="casual">Casual</option>
+                            <option value="inspirational">Inspirational</option>
+                            <option value="educational">Educational</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group checkbox">
+                        <input type="checkbox" id="include_outline" name="include_outline" checked>
+                        <label for="include_outline">Include Post Outlines</label>
+                    </div>
+
+                    <button type="submit" id="generateBtn">Generate Ideas</button>
+                </form>
+            </div>
+
+            <div class="results-container" id="resultsContainer">
+                <h2>Your Sustainable Blog Ideas</h2>
+                <div id="loading" style="display: none;">
+                    <p>Generating ideas...</p>
+                </div>
+                <div id="results"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('ideaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const resultsContainer = document.getElementById('resultsContainer');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            resultsContainer.style.display = 'block';
+            loading.style.display = 'block';
+            results.innerHTML = '';
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                results.innerHTML = `<div class='list-item'>${data.generated_ideas.replace(/\n/g, '<br>')}</div>`;
+            } catch (error) {
+                results.innerHTML = `<div class='error'>Error: ${error.message}</div>`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>
